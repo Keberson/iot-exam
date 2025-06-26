@@ -55,7 +55,9 @@ class TestStudentsAPI:
     # ===== GET /students/ =====
     def test_get_all_students_positive(self):
         """Позитивный тест получения всех студентов"""
+        print(f"{BASE_URL}{API_PREFIX}/")
         response = requests.get(f"{BASE_URL}{API_PREFIX}/", headers=HEADERS)
+        print(response)
         assert response.status_code == 200
         assert isinstance(response.json(), list)
         
