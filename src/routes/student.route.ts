@@ -174,8 +174,6 @@ router.post(
  *     description: Студент удален.
  *    400:
  *     $ref: '#/components/responses/BadRequestError'
- *    401:
- *     $ref: '#/components/responses/NoAccess'
  *    500:
  *     $ref: '#/components/responses/InternalServerError'
  */
