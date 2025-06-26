@@ -4,7 +4,7 @@ import random
 import string
 import os
 
-BASE_URL = f"http://{os.getenv('BACK_HOST', 'localhost')}:{os.getenv('BACK_PORT', 5000)}/api"
+BASE_URL = f"http://{os.getenv('BACK_HOST', '79.132.136.198')}:{os.getenv('BACK_PORT', 80)}/api"
 API_PREFIX = "/students"
 HEADERS = {"Content-Type": "application/json"}
 
@@ -12,7 +12,7 @@ expected_model = {
     "id": int,
     "first_name": str,
     "surname": str,
-    "work_group": str,
+    "student_group": str,
     "email": str,
     "active": str
 }
@@ -55,18 +55,16 @@ class TestStudentsAPI:
     # ===== GET /students/ =====
     def test_get_all_students_positive(self):
         """Позитивный тест получения всех студентов"""
-        print(f"{BASE_URL}{API_PREFIX}/")
         response = requests.get(f"{BASE_URL}{API_PREFIX}/", headers=HEADERS)
-        print(response)
         assert response.status_code == 200
         assert isinstance(response.json(), list)
         
-        for student in response:
+        for student in response.json():
             check_student(student)
         
     def test_get_all_students_negative(self):
         """Негативный тест - неверный метод"""
-        response = requests.post(f"{BASE_URL}{API_PREFIX}/", headers=HEADERS)
+        response = requests.put(f"{BASE_URL}{API_PREFIX}/", headers=HEADERS)
         assert response.status_code == 404
 
     # ===== GET /students/active =====
@@ -75,7 +73,7 @@ class TestStudentsAPI:
         response = requests.get(f"{BASE_URL}{API_PREFIX}/active", headers=HEADERS)
         assert response.status_code == 200
         students = response.json()
-        for student in response:
+        for student in students:
             check_student(student)
         assert all(s["active"] == "активный" for s in students)
     
@@ -109,7 +107,7 @@ class TestStudentsAPI:
         assert student["first_name"] == data["first_name"]
         assert student["surname"] == data["surname"]
         assert student["email"] == data["email"]
-        assert student["work_group"] == data["work_group"]
+        assert student["student_group"] == data["student_group"]
         assert student["active"] == ACTIVE_MAP[data["active"]]
         requests.delete(f"{BASE_URL}{API_PREFIX}/{student['id']}", headers=HEADERS)
     

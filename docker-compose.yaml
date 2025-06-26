@@ -55,18 +55,6 @@ services:
         networks:
             - iot-network
 
-    tests:
-        build: ./tests
-        env_file:
-            - .env
-        depends_on:
-            - backend
-            - nginx
-        environment:
-            - WAIT_HOSTS=api:3000
-            - WAIT_HOSTS_TIMEOUT=30
-            - WAIT_SLEEP_INTERVAL=1
-
 volumes:
     iot-db_volume:
 
