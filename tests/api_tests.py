@@ -1,3 +1,5 @@
+import socket
+import time
 import pytest
 import requests
 import random
@@ -7,6 +9,25 @@ import os
 BASE_URL = f"http://{os.getenv('BACK_HOST', 'localhost')}:{os.getenv('BACK_PORT', 5000)}/api"
 API_PREFIX = "/students"
 HEADERS = {"Content-Type": "application/json"}
+
+def is_backend_ready(url: str, timeout: int = 30) -> bool:
+    """Проверяет, доступен ли бэкенд."""
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                return True
+        except (requests.exceptions.ConnectionError, socket.gaierror):
+            pass
+        time.sleep(1)
+    return False
+
+@pytest.fixture(scope="session", autouse=True)
+def wait_for_backend():
+    backend_url = f"{BASE_URL}/{API_PREFIX}"
+    if not is_backend_ready(backend_url):
+        pytest.fail("Backend не стал доступен после 30 секунд ожидания!")
 
 expected_model = {
     "id": int,
