@@ -33,7 +33,7 @@
 
 ### Шаги:
 
-1. Предварительно запускаем backend.
+1. Предварительно запускаем backend и ожидаем его запуска.
 1. `cd tests`
 1. `python -m venv venv`
 1. `source venv/bin/activate` (Linux/macOS), `.\venv\Scripts\activate` (Windows)
