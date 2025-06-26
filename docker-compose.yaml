@@ -2,7 +2,7 @@ version: "3"
 services:
     nginx:
         build:
-            context: ./nginx
+            context: ./build-nginx
         image: nginx
         container_name: iot-nginx
         env_file:
@@ -41,8 +41,7 @@ services:
 
     backend:
         build:
-            context: ./backend
-            dockerfile: Dockerfile
+            context: .
         container_name: iot-backend
         depends_on:
             db:
@@ -55,6 +54,17 @@ services:
             - $BACK_PORT:$BACK_PORT
         networks:
             - iot-network
+
+    tests:
+        build: ./tests
+        env_file:
+            - .env
+        depends_on:
+            - backend
+        environment:
+            - WAIT_HOSTS=api:3000
+            - WAIT_HOSTS_TIMEOUT=30
+            - WAIT_SLEEP_INTERVAL=1
 
 volumes:
     iot-db_volume:
