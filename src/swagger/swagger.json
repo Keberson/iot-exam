@@ -1,0 +1,263 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IOT API",
+    "description": "API для системы управления студентами",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/students/": {
+      "get": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Получение всех студентов",
+        "description": "Получение всех студентов",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AllStudents"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Создание студента",
+        "description": "Создание потока",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetStudent"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/students/active": {
+      "get": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Получение только активных студентов",
+        "description": "Получение только активных студентов",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AllStudents"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/students/{id}": {
+      "get": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Получение студента по ID",
+        "description": "Получение студента по ID",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "ID студента"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetStudent"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Удаление студента",
+        "description": "Удаление студента",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "ID студента"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Студент удален."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/NoAccess"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "AllStudents": {
+        "description": "Массив пользователей.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Student"
+              }
+            }
+          }
+        }
+      },
+      "GetStudent": {
+        "description": "Студент с указанным ID",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Student"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Возникли неполадки на сервере",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Сообщение об ошибке",
+                  "default": "Проблемы на сервере"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadRequestError": {
+        "description": "Переданные данные не соответствуют требуемым типам или недостаточно полей в объекте",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Сообщение об ошибке",
+                  "example": "Некорректные данные"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Student": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID студента",
+            "example": 1
+          },
+          "first_name": {
+            "type": "string",
+            "example": "Максим"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Кузов"
+          },
+          "student_group": {
+            "type": "string",
+            "example": "М24-Ш04"
+          },
+          "email": {
+            "type": "string",
+            "example": "aboba@aboba.ru"
+          },
+          "active": {
+            "type": "string",
+            "enum": [
+              "активный",
+              "отчисленный"
+            ],
+            "example": "активный"
+          }
+        }
+      },
+      "StudentCreate": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Максим"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Кузов"
+          },
+          "student_group": {
+            "type": "string",
+            "example": "М24-Ш04"
+          },
+          "email": {
+            "type": "string",
+            "example": "aboba@aboba.ru"
+          },
+          "active": {
+            "type": "boolean",
+            "example": true,
+            "required": false
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Students",
+      "description": "Система управления студентами"
+    }
+  ]
+}

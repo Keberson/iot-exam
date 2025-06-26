@@ -1,0 +1,64 @@
+version: "3"
+services:
+    nginx:
+        build:
+            context: ./nginx
+        image: nginx
+        container_name: iot-nginx
+        env_file:
+            - .env
+        depends_on:
+            - backend
+        ports:
+            - $NGINX_PORT:$NGINX_PORT
+        volumes:
+            - ./build-nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+        networks:
+            - iot-network
+
+    db:
+        container_name: iot-db
+        image: postgres:latest
+        restart: always
+        env_file:
+            - .env
+        environment:
+            POSTGRES_USER: ${PG_USER}
+            POSTGRES_PASSWORD: ${PG_PASSWORD}
+            POSTGRES_DB: ${PG_DB}
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        ports:
+            - $PG_PORT:5432
+        volumes:
+            - iot-db_volume:/var/lib/postgresql/data/
+            - ./build-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - iot-network
+
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        container_name: iot-backend
+        depends_on:
+            db:
+                condition: service_healthy
+        env_file:
+            - .env
+        expose:
+            - $BACK_PORT
+        ports:
+            - $BACK_PORT:$BACK_PORT
+        networks:
+            - iot-network
+
+volumes:
+    iot-db_volume:
+
+networks:
+    iot-network:
+        driver: bridge
